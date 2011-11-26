@@ -1,0 +1,279 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Ассемблер, осень 2011, 3528</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <style type="text/css">
+    td.numbers {text-align: right;}
+    td.names {text-align: left;}
+    td {text-align: center;}
+    tr.odd {background-color: #e0e0e0;}
+    </style>
+  </head>
+  <body>
+    <h2>Ассемблер, осень 2011, 3528</h2>
+    <h3>Лекции</h3>
+    <h4>Лекция 1, 2 (12 ноября 2011)</h4>
+    <ul>
+      <li>i8086</li>
+      <li>регистры общего назначения, сегментные регистры, регистр флагов</li>
+      <li>некоторые распространенные команды</li>
+      <li>реальный режим</li>
+      <li>команды для работы со стеком</li>
+    </ul>
+    <h4>Лекция 3, 4, 5 (19 ноября 2011)</h4>
+    <ul>
+      <li>команды для работы со стеком (продолжение)</li>
+      <li>stack frame</li>
+      <li>прерывания</li>
+      <li>i80286</li>
+      <li>защищенный режим</li>
+      <li>GDT, дескрипторы сегментов, формат селекторов сегментов</li>
+      <li>LDT</li>
+      <li>IDT</li>
+      <li>call-gate</li>
+      <li>TSS, TR</li>
+      <li>i80386</li>
+      <li>страничная адресация</li>
+      <li>использование сегментной и страничной адресации в современных операционных системах</li>
+      <li>i80486</li>
+      <li>кэш, invlpg</li>
+      <li>загрузочный сектор дискет, MBR ЖД</li>
+    </ul>
+    <h3>Задания</h3>
+    <p>Задания высылаются на <script type="text/javascript">var mp1 = "vanyacpp";
+var mp2 = "gmail.com";
+document.write("\x3ca href=" + "mail" + "to:" + mp1 +
+"@" + mp2 + "\x3e" + mp1 + "@" + mp2 +  "\x3c/a\x3e");</script>. При переписке со мной, пожалуйста, избегайте <a href="http://idallen.com/topposting.html">top-posting'а</a>.</p>
+    <ul>
+      <li>Длинная арифметика (28 ноября)
+      <p>В архиве <a href="http://rain.ifmo.ru/~sorokin/asm/asm-task-1.zip">asm-task-1.zip</a> лежит пример программы
+      делающей сложение длинных чисел. Необходимо в ней разобраться и написать программы, которые делают вычитание, умножение и деление.
+      Максимально медленное деление которое принимается &mdash; это деление бинарным поиском. Деление вычитаниями не засчитывается.</p>
+      </li>
+      <li>Первичный загрузчик, переход в защищенный режим, обработка прерываний в защищенном режиме (3 декабря)
+      <p>Необходимо написать загрузчик, который будет располагаться в MBR. Он будет зачитывать с ЖД ядро. Откуда именно загружать ядро?
+      Как хотите. Можете распарсить FAT, можете жестко прохардкодить адреса секторов в загрузчике. Ядро должно переходить в
+      защищенных режим, настраивать GDT самым простым образом &mdash; сегмента кода, сегмент данных, у обоих база 0, лимит 4Gb. Настраивать IDT.
+      Иметь возможность отображать информацию об обработанных прерываниях. Конкретно интересно видеть количество обработанных
+      прерываний от таймера и последние несколько скан-кодов клавиатуры.</p>
+      </li>
+    </ul>
+    <h3>Что почитать?</h3>
+    <ul>
+      <li>любая книжка по ассемблеру, например,
+      <a href="http://www.google.ru/search?ie=UTF-8&amp;q=%D0%B7%D1%83%D0%B1%D0%BA%D0%BE%D0%B2+%D0%B0%D1%81%D1%81%D0%B5%D0%BC%D0%B1%D0%BB%D0%B5%D1%80">Зубков</a> или
+      <a href="http://www.google.ru/search?ie=UTF-8&amp;q=%D1%80%D1%83%D0%B4%D0%B0%D0%BA%D0%BE%D0%B2+%D1%84%D0%B8%D0%BD%D0%BE%D0%B3%D0%B5%D0%BD%D0%BE%D0%B2">Рудаков, Финогенов</a>.
+      </li>
+      <li><a href="http://www.intel.com/content/www/us/en/processors/architectures-software-developer-manuals.html">Intel® 64 and IA-32 Architectures Software Developer Manuals</a> &mdash; конкретно нас интересует том 3 «System Programming Guide».</li>
+      <li><a href="http://people.redhat.com/drepper/cpumemory.pdf">Ulrich Drepper &mdash; What Every Programmer Should Know About Memory</a></li>
+      <li><a href="http://msdn.microsoft.com/en-us/magazine/bb985992.aspx">An In-Depth Look into the Win32 Portable Executable File Format, Part 1</a></li>
+      <li><a href="http://msdn.microsoft.com/en-us/magazine/cc301808.aspx">An In-Depth Look into the Win32 Portable Executable File Format, Part 2</a></li>
+      <li><a href="http://msdn.microsoft.com/en-us/magazine/ms809762.aspx">Peering Inside the PE: A Tour of the Win32 Portable Executable File Format</a></li>
+      <li><a href="http://eli.thegreenplace.net/2011/11/03/position-independent-code-pic-in-shared-libraries/">Eli Benderski &mdash; Position Independent Code (PIC) in shared libraries</a></li>
+      <li><a href="http://www.technovelty.org/code/c/amd64-pic.html">Position Independent Code and x86-64 libraries</a></li>
+      <li><a href="http://www.symantec.com/connect/articles/dynamic-linking-linux-and-windows-part-one">Dynamic Linking in Linux and Windows, Part 1</a></li>
+      <li><a href="http://www.symantec.com/connect/articles/dynamic-linking-linux-and-windows-part-two">Dynamic Linking in Linux and Windows, Part 2</a></li>
+    </ul>
+    <h3>Список группы</h3>
+    <table border="1" cellpadding="3" cellspacing="0">
+      <tr><td></td>
+      <td>Имя</td>
+      <td>Задание 1</td>
+      <td>Тест 1</td>
+      <td>Задание 2</td></tr>
+      <tr class="odd">
+      <td class="numbers">1</td>
+      <td class="names">Авдеев Павел</td>
+      <td></td>
+      <td>++&#8722;</td>
+      <td></td></tr>
+      <tr>
+      <td class="numbers">2</td>
+      <td class="names">Архипов Виктор</td>
+      <td></td>
+      <td></td>
+      <td></td></tr>
+      <tr class="odd">
+      <td class="numbers">3</td>
+      <td class="names">Бойченко Максим</td>
+      <td></td>
+      <td>++&#8722;</td>
+      <td></td></tr>
+      <tr>
+      <td class="numbers">4</td>
+      <td class="names">Буслаев Александр</td>
+      <td></td>
+      <td>++&#8722;</td>
+      <td></td></tr>
+      <tr class="odd">
+      <td class="numbers">5</td>
+      <td class="names">Ванслов Евгений</td>
+      <td></td>
+      <td></td>
+      <td></td></tr>
+      <tr>
+      <td class="numbers">6</td>
+      <td class="names">Вышкин Антон</td>
+      <td></td>
+      <td>&#8722;+&#8722;</td>
+      <td></td></tr>
+      <tr class="odd">
+      <td class="numbers">7</td>
+      <td class="names">Геращенко Анатолий</td>
+      <td></td>
+      <td>+++</td>
+      <td></td></tr>
+      <tr>
+      <td class="numbers">8</td>
+      <td class="names">Глухов Александр</td>
+      <td>+</td>
+      <td>&#8722;+&#8722;</td>
+      <td></td></tr>
+      <tr class="odd">
+      <td class="numbers">9</td>
+      <td class="names">Головченко Дмитрий</td>
+      <td></td>
+      <td>&#8722;+&#8722;</td>
+      <td></td></tr>
+      <tr>
+      <td class="numbers">10</td>
+      <td class="names">Захарчук Артем</td>
+      <td></td>
+      <td>++&#8722;</td>
+      <td></td></tr>
+      <tr class="odd">
+      <td class="numbers">11</td>
+      <td class="names">Зун Павел</td>
+      <td></td>
+      <td>&#8722;++</td>
+      <td></td></tr>
+      <tr>
+      <td class="numbers">12</td>
+      <td class="names">Иванова Юлия</td>
+      <td></td>
+      <td></td>
+      <td></td></tr>
+      <tr class="odd">
+      <td class="numbers">13</td>
+      <td class="names">Кавецкий Руслан</td>
+      <td></td>
+      <td>+++</td>
+      <td></td></tr>
+      <tr>
+      <td class="numbers">14</td>
+      <td class="names">Колганов Максим</td>
+      <td>+</td>
+      <td>+++</td>
+      <td></td></tr>
+      <tr class="odd">
+      <td class="numbers">15</td>
+      <td class="names">Котов Алексей</td>
+      <td></td>
+      <td></td>
+      <td></td></tr>
+      <tr>
+      <td class="numbers">16</td>
+      <td class="names">Кузнецов Георгий</td>
+      <td></td>
+      <td>&#8722;+&#8722;</td>
+      <td></td></tr>
+      <tr class="odd">
+      <td class="numbers">17</td>
+      <td class="names">Лебедева Анастасия</td>
+      <td></td>
+      <td>&#8722;+&#8722;</td>
+      <td></td></tr>
+      <tr>
+      <td class="numbers">18</td>
+      <td class="names">Матвеева Анна</td>
+      <td></td>
+      <td>&#8722;&#8722;&#8722;</td>
+      <td></td></tr>
+      <tr class="odd">
+      <td class="numbers">19</td>
+      <td class="names">Никулин Михаил</td>
+      <td></td>
+      <td>++&#8722;</td>
+      <td></td></tr>
+      <tr>
+      <td class="numbers">20</td>
+      <td class="names">Овчинников Кирилл</td>
+      <td></td>
+      <td></td>
+      <td></td></tr>
+      <tr class="odd">
+      <td class="numbers">21</td>
+      <td class="names">Охитин Антон</td>
+      <td></td>
+      <td></td>
+      <td></td></tr>
+      <tr>
+      <td class="numbers">22</td>
+      <td class="names">Понкратов Алексей</td>
+      <td></td>
+      <td>&#8722;+&#8722;</td>
+      <td></td></tr>
+      <tr class="odd">
+      <td class="numbers">23</td>
+      <td class="names">Савченко Анна</td>
+      <td></td>
+      <td>&#8722;&#8722;&#8722;</td>
+      <td></td></tr>
+      <tr>
+      <td class="numbers">24</td>
+      <td class="names">Святушенко Елена</td>
+      <td></td>
+      <td></td>
+      <td></td></tr>
+      <tr class="odd">
+      <td class="numbers">25</td>
+      <td class="names">Ситдыкова Надия</td>
+      <td></td>
+      <td></td>
+      <td></td></tr>
+      <tr>
+      <td class="numbers">26</td>
+      <td class="names">Флотский Артем</td>
+      <td></td>
+      <td></td>
+      <td></td></tr>
+      <tr class="odd">
+      <td class="numbers">27</td>
+      <td class="names">Хамзин Альфред</td>
+      <td></td>
+      <td></td>
+      <td></td></tr>
+      <tr>
+      <td class="numbers">28</td>
+      <td class="names">Хан Вадим</td>
+      <td></td>
+      <td>&#8722;+&#8722;</td>
+      <td></td></tr>
+      <tr class="odd">
+      <td class="numbers">29</td>
+      <td class="names">Чернопрудов Дмитрий</td>
+      <td></td>
+      <td>++&#8722;</td>
+      <td></td></tr>
+      <tr>
+      <td class="numbers">30</td>
+      <td class="names">Якупов Илья</td>
+      <td></td>
+      <td></td>
+      <td></td></tr>
+      <tr class="odd">
+      <td class="numbers">31</td>
+      <td class="names">Ярош Андрей</td>
+      <td></td>
+      <td></td>
+      <td></td></tr>
+    </table>
+    <p>
+      <a href="http://validator.w3.org/check?uri=referer">
+        <img src="http://www.w3.org/Icons/valid-xhtml10" alt="Valid XHTML 1.0 Strict" height="31" width="88" />
+      </a>
+    </p>
+  </body>
+</html>
+
