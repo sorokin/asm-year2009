@@ -40,6 +40,19 @@
       <li>кэш, invlpg</li>
       <li>загрузочный сектор дискет, MBR ЖД</li>
     </ul>
+    <h4>Лекция 6, 7, 8 (26 ноября 2011)</h4>
+    <ul>
+      <li>общие замечания, почему обычно важно знать, по какому адресу будет загружаться код, когда вы его компилируете</li>
+      <li>директива org, адрес текущей команды $</li>
+      <li>relocatable код, таблица релокаций, пример таблицы релокаций (PE файлы)</li>
+      <li>недостатки relocatable кода, детальное рассмотрение кодирования команд mov и call/jmp, PIC</li>
+      <li>пример PIC (ELF файлы), GOT, PLT</li>
+      <li>динамическая линковка, отличия линковки .dll'ок и .so'шек</li>
+      <li>статическая линковка, overview gcc'шного toolchain'а, объектные файлы, либы, импорт либы, function level linking</li>
+      <li>__declspec(dllimport)</li>
+      <li>__attribute__((visibility("hidden")))</li>
+      <li>некоторые полезные программы для выполнения второго задания (fasm, bochs, dd, mkfs.msdos, hd), как сделать загрузочный диск и залить на него свою программу</li>
+    </ul>
     <h3>Задания</h3>
     <p>Задания высылаются на <script type="text/javascript">var mp1 = "vanyacpp";
 var mp2 = "gmail.com";
@@ -74,6 +87,7 @@ document.write("\x3ca href=" + "mail" + "to:" + mp1 +
       <li><a href="http://www.technovelty.org/code/c/amd64-pic.html">Position Independent Code and x86-64 libraries</a></li>
       <li><a href="http://www.symantec.com/connect/articles/dynamic-linking-linux-and-windows-part-one">Dynamic Linking in Linux and Windows, Part 1</a></li>
       <li><a href="http://www.symantec.com/connect/articles/dynamic-linking-linux-and-windows-part-two">Dynamic Linking in Linux and Windows, Part 2</a></li>
+      <li><a href="http://people.redhat.com/drepper/dsohowto.pdf">Ulrich Drepper &mdash; How to Write Shared Libraries</a></li>
     </ul>
     <h3>Список группы</h3>
     <table border="1" cellpadding="3" cellspacing="0">
