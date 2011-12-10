@@ -69,16 +69,75 @@
        <li>недостатки MMX</li>
        <li>SSE, SSE2, SSE3, SSSE3, SSE4.x</li>
     </ul>
+    <h4>Лекция 11, 12, 13 (10 декабря 2011)</h4>
+    <ul>
+      <li>Как предсталяются в машинном коде различные конструкции C++
+        <ul>
+          <li>функции</li>
+          <li>глобальные переменные POD'ы</li>
+          <li>глобальные переменные не POD'ы</li>
+          <li>необходимая поддержка со стороны компилятора, линковщика и библиотеки времени исполнения (CRT) для поддержки глобальных переменных не POD'ов</li>
+          <li>интегральные типы, числа с плавающей точкой, указатели, указатели на функцию, union</li>
+          <li>структуры</li>
+          <li>конструкторы</li>
+          <li>деструкторы</li>
+          <li>порядок вызова конструкторов/деструкторов у переменных членов класса</li>
+          <li>наследование</li>
+          <li>порядок вызова конструкторов/деструкторов у базовых классов</li>
+          <li>виртуальное наследование</li>
+          <li>порядок вызова конструкторов/деструкторов у базовых классов при виртуальном наследовании</li>
+          <li>виртуальные функции, таблицы виртуальных функции</li>
+          <li>в какой момент происходит инициализация указателей на таблицы виртуальных функции при создании объекта</li>
+          <li>передача аргументов интегральных типов, чисел с плавающей точкой, указателей, ссылок при вызове функции</li>
+          <li>возврат интегральных типов, чисел с плавающей точкой, указателей, ссылок при вызове функции</li>
+          <li>способы передачи структур по значению</li>
+          <li>оптимизация при передаче rvalue в функцию получающую аргумент по значению</li>
+          <li>возврат структур по значению</li>
+          <li>RVO, NRVO</li>
+          <li>исключения</li>
+          <li>способы реализации исключений (SEH, Itanium ABI EH)</li>
+          <li>понятие выравнивания, на каких процессорах оно важно и на каких неважно</li>
+        </ul>
+      </li>
+      <li>Что такое undefined behavior и зачем он нужен
+        <ul>
+          <li>что такое стандарт C++, какие аспекты поведения программы определяются в стандарте?</li>
+          <li>что такое ABI, какие аспекты поведения программы определяются в ABI?</li>
+          <li>какие аспекты поведения программы определяются операционной системой?</li>
+          <li>понятие undefined behavior, примеры</li>
+          <li>понятие unspecified behavior, примеры</li>
+          <li>понятие implementation-defined behavior, примеры</li>
+          <li>пример undefined behavior: сдвиг целого на большее количество битов, чем в нем есть, 3 способа сделать его defined, чем все они плохие</li>
+          <li>pointer aliasing, примеры (сумма чисел, векторное произведение, memcpy)</li>
+          <li>pointer aliasing и автоматическая векторизация</li>
+          <li>restrict и оптимизации, возможные при его использовании, почему почти любой undefined behavior это дополнительные возможности оптимизации у компилятора</li>
+          <li>числа с плавающей точкой, какие возможны оптимизации для чисел с плавающей точкой и какие нет, какие флаги компилятора влияют на это</li>
+          <li>переполнение знаковых целых, -fwrapv</li>
+          <li>понятие undefined behavior, как соглашение между программистом и разработчиком компилятора, о том, какие оптимизации компилятор имеет право делать</li>
+          <li>пример, как различные оптимизации ломают программу, содержащую undefined behavior, на примере Dead Code Elimination (DCE) и Redundant Null Check Elimination (RNCE)</li>
+          <li>пример, почему DCE будет работать хуже если мы сделаем обращение к нулевому указателю defined-поведением</li>
+          <li>возможности, которые предоставляют компиляторы для обнаружения undefined behavior, примеры</li>
+          <li>примеры undefined behavior, которые в некоторых компиляторах сведены до defined</li>
+        </ul>
+      </li>
+      <li>Типовые приемы для реализации аллокаторов памяти в user-space
+        <ul>
+          <li>интерфейс предоставляемые ядром для аллокации памяти (VirtualAlloc, mmap)</li>
+          <li>понятие free/reversed/committed памяти, в какой момент происходит реальное отображение виртуальной памяти на физическую память</li>
+          <li>аллокатор для объектов фиксированного размера с аллокацией/деаллокацией за O(1), Slab allocator</li>
+          <li>многопоточной аллокатор памяти, проблемы с которыми должен бороться многопоточный аллокатор памяти: contention, false sharing, blowup</li>
+          <li>примеры многопоточных аллокаторов памяти: hoard memory allocator, jemalloc, HeapAlloc</li>
+        </ul>
+      </li>
+    </ul>
     <h4>Идеи для следующих лекций</h4>
     <ul>
       <li>relocation of MZ-executable</li>
-      <li>аллокация памяти в user-space'е</li>
-      <li>стандартные приемы для реализации аллокаторов в user-space'е</li>
       <li>расширения набора команд (avx, vex)</li>
       <li>x86-64, RIP-relative addressing</li>
       <li>overview какие ещё есть/существовали другие архитектуры, чем они отличаются</li>
-      <li>TIB, TLS, SEH-exception handling (?)</li>
-      <li>Fibers</li>
+      <li>TIB, TLS, SEH-exception handling</li>
+      <li>Fibers, FLS</li>
       <li>Half-precision floating-point format</li>
     </ul>
     <h3>Задания</h3>
@@ -130,7 +189,16 @@ document.write("\x3ca href=" + "mail" + "to:" + mp1 +
       <li><a href="http://www.cs.berkeley.edu/~wkahan/ieee754status/754story.html">An Interview with the Old Man of Floating-Point</a></li>
       <li><a href="http://www.cse.msu.edu/~cse320/Documents/FloatingPoint.pdf">What Every Computer Scientist Should Know About Floating-Point Arithmetic</a></li>
       <li><a href="http://en.wikipedia.org/wiki/Fast_inverse_square_root">Fast inverse square root</a></li>
+      <li><a href="http://alenacpp.blogspot.com/2008/02/rvo-nrvo.html">RVO и NRVO</a></li>
+      <li><a href="http://sourcery.mentor.com/public/cxx-abi/abi-eh.html">Itanium C++ ABI: Exception Handling</a></li>
+      <li><a href="http://www.microsoft.com/msj/0197/Exception/Exception.aspx">A Crash Course on the Depths of Structured Exception Handling</a></li>
+      <li><a href="http://www.openrce.org/articles/full_view/21">Reversing Microsoft Visual C++ Part I: Exception Handling</a></li>
+      <li><a href="http://www.openrce.org/articles/full_view/23">Reversing Microsoft Visual C++ Part II: Classes, Methods and RTTI</a></li>
+      <li><a href="http://blog.llvm.org/2011/05/what-every-c-programmer-should-know.html">What Every C Programmer Should Know About Undefined Behavior, Part 1</a></li>
+      <li><a href="http://blog.llvm.org/2011/05/what-every-c-programmer-should-know_14.html">What Every C Programmer Should Know About Undefined Behavior, Part 2</a></li>
+      <li><a href="http://blog.llvm.org/2011/05/what-every-c-programmer-should-know_21.html">What Every C Programmer Should Know About Undefined Behavior, Part 3</a></li>
       <li><a href="http://www.cs.umass.edu/~emery/hoard/asplos2000.pdf">Hoard: A Scalable Memory Allocator for Multithreaded Applications</a></li>
+      <li><a href="http://people.freebsd.org/~jasone/jemalloc/bsdcan2006/jemalloc.pdf">A Scalable Concurrent malloc(3) Implementation for FreeBSD</a></li>
     </ul>
     <h3>Список группы</h3>
     <table border="1" cellpadding="3" cellspacing="0">
@@ -208,7 +276,7 @@ document.write("\x3ca href=" + "mail" + "to:" + mp1 +
       <tr class="odd">
       <td class="numbers">9</td>
       <td class="names">Головченко Дмитрий</td>
-      <td></td>
+      <td>+</td>
       <td>&#8722;+&#8722;</td>
       <td></td>
       <td></td>
@@ -250,7 +318,7 @@ document.write("\x3ca href=" + "mail" + "to:" + mp1 +
       <td class="names">Колганов Максим</td>
       <td>+</td>
       <td>+++</td>
-      <td></td>
+      <td>+</td>
       <td></td>
       <td></td></tr>
       <tr class="odd">
