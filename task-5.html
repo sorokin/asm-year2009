@@ -27,7 +27,7 @@
       <li>Должен избегать выдавать разным потокам память из одной и той же линейки кеша (это может происходить иногда, но это не должно происходить постоянно) (false sharing)</li>
       <li>В случае когда один поток все время выделяет память, а другой её освобождает, память запрашиваемая у системы не должна расти с течением времени (blowup)</li>
     </ul>
-    <p>Перед тем, как начать писать советую ознакомиться с статьёй <a href="http://www.cs.umass.edu/~emery/hoard/asplos2000.pdf">Hoard: A Scalable
+    <p>Перед тем, как начать писать советую ознакомиться с статьей <a href="http://www.cs.umass.edu/~emery/hoard/asplos2000.pdf">Hoard: A Scalable
     Memory Allocator for Multithreaded Applications</a>. При выполнении этого задания <b>не обязательно</b> использовать ассемблер, но и не запрещается.</p>
     <p>Чтобы тестировать свой аллокатор вам необходимо перехватить вызовы <span class="codein">malloc</span>/<span class="codein">free</span>. Самый простой способ это сделать &mdash; использовать <a href="http://linux.die.net/man/8/ld.so"><span class="codein">LD_PRELOAD</span></a>.
     Я набросал простенький аллокатор памяти, которые все <span class="codein">malloc</span>/<span class="codein">free</span> отображает в <a href="http://linux.die.net/man/2/mmap"><span class="codein">mmap</span>/<span class="codein">munmap</span></a> и умеет логировать в <span class="codein">stderr</span>.</p>
@@ -57,7 +57,7 @@
     <div class="codeblock">
     $ LD_PRELOAD=./malloc-intercept.so kreversi
     </div>
-    <p>При запуске видим, что программа стала работать значительно медленее, а в <span class="codein">stderr</span> валится лог обо
+    <p>При запуске видим, что программа стала работать значительно медленнее, а в <span class="codein">stderr</span> валится лог обо
     всех вызовах <span class="codein">malloc</span>/<span class="codein">free</span>/<span class="codein">realloc</span>:</p>
     <div class="codeblock">
     malloc 456 0x7f172be84028<br/>
