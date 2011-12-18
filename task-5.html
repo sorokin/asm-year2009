@@ -1,0 +1,100 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Задание №5</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <style type="text/css">
+      .codeblock
+      {
+        background: #e0e0e0;
+        border: solid 1px black;
+        padding: 5px;
+        font-family: monospace;
+      }
+      .codein
+      {
+        font-family: monospace;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Задание №5</h2>
+    <p>В данном задании необходимо написать многопоточный аллокатор памяти по мотивам того, что я рассказывал на лекции.</p>
+    <p>Требования:</p>
+    <ul>
+      <li>Аллокация памяти для маленьких объектов за амортизированное O(1)</li>
+      <li>Должен нормально масштабироваться с увеличением количества потоков</li>
+      <li>Должен избегать выдавать разным потокам память из одной и той же линейки кеша (это может происходить иногда, но это не должно происходить постоянно) (false sharing)</li>
+      <li>В случае когда один поток все время выделяет память, а другой её освобождает, память запрашиваемая у системы не должна расти с течением времени (blowup)</li>
+    </ul>
+    <p>Перед тем, как начать писать советую ознакомиться с статьёй <a href="http://www.cs.umass.edu/~emery/hoard/asplos2000.pdf">Hoard: A Scalable
+    Memory Allocator for Multithreaded Applications</a>. При выполнении этого задания <b>не обязательно</b> использовать ассемблер, но и не запрещается.</p>
+    <p>Чтобы тестировать свой аллокатор вам необходимо перехватить вызовы <span class="codein">malloc</span>/<span class="codein">free</span>. Самый простой способ это сделать &mdash; использовать <a href="http://linux.die.net/man/8/ld.so"><span class="codein">LD_PRELOAD</span></a>.
+    Я набросал простенький аллокатор памяти, которые все <span class="codein">malloc</span>/<span class="codein">free</span> отображает в <a href="http://linux.die.net/man/2/mmap"><span class="codein">mmap</span>/<span class="codein">munmap</span></a> и умеет логировать в <span class="codein">stderr</span>.</p>
+    <p>Полный список перехватываемых функций:</p>
+    <ul>
+      <li><a href="http://linux.die.net/man/3/malloc"><span class="codein">malloc</span></a></li>
+      <li><span class="codein">calloc</span></li>
+      <li><span class="codein">realloc</span></li>
+      <li><span class="codein">free</span></li>
+      <li><a href="http://linux.die.net/man/3/posix_memalign"><span class="codein">posix_memalign</span></a></li>
+      <li><span class="codein">memalign</span></li>
+      <li><span class="codein">valloc</span></li>
+    </ul>
+    <p>Вот последовательность действий необходимая, чтобы его запустить.</p>
+    <p>Качаем исходники:</p>
+    <div class="codeblock">
+    $ git clone git://github.com/sorokin/malloc-intercept.git<br/>
+    $ cd malloc-intercept<br/>
+    $ ls<br/>
+    internals.cpp  internals.h  malloc-intercept.cpp
+    </div>
+    <p>Бегло посматриваем содержимое файлов. Компилируем:</p>
+    <div class="codeblock">
+    $ g++ --shared -fPIC -g -o malloc-intercept.so malloc-intercept.cpp internals.cpp
+    </div>
+    <p>Создается файл <span class="codein">malloc-intercept.so</span>. Запускаем какую-нибудь программу с использованием этого аллокатора, например <span class="codein">kreversi</span>:</p>
+    <div class="codeblock">
+    $ LD_PRELOAD=./malloc-intercept.so kreversi
+    </div>
+    <p>При запуске видим, что программа стала работать значительно медленее, а в <span class="codein">stderr</span> валится лог обо
+    всех вызовах <span class="codein">malloc</span>/<span class="codein">free</span>/<span class="codein">realloc</span>:</p>
+    <div class="codeblock">
+    malloc 456 0x7f172be84028<br/>
+    malloc 456 0x7f172be81028<br/>
+    malloc 34 0x7f172be80028<br/>
+    malloc 36 0x7f172be7e028<br/>
+    malloc 104 0x7f172be7d028<br/>
+    free 0x7f172be7e028<br/>
+    free 0x7f172be80028<br/>
+    free 0x7f172be7d028<br/>
+    malloc 72 0x7f172be80028<br/>
+    free 0x7f172be80028<br/>
+    malloc 48 0x7f172be80028<br/>
+    malloc 60 0x7f172be7e028<br/>
+    realloc 0x7f172bf43028 28 0x7f172be7d028<br/>
+    realloc 0x7f172bf46028 56 0x7f172bf43028<br/>
+    free 0x7f172be80028<br/>
+    free 0x7f172be7e028<br/>
+    free 0x7f172be81028<br/>
+    free 0x7f172be84028<br/>
+    free 0x7f172bedc028
+    </div>
+    <p>Трассировки в <span class="codein">stderr</span> можно отключить:</p>
+    <div class="codeblock">
+    $ LD_PRELOAD=./malloc-intercept.so MALLOC_INTERCEPT_NO_TRACE=1 kreversi
+    </div>
+    <p>Чтобы посмотреть символы, которые экспортятся/импортятся в <span class="codein">malloc-intercept.so</span>, можно использовать следующую команду:</p>
+    <div class="codeblock">
+    $ objdump -T --demangle malloc-intercept.so<br/>
+    </div>
+    <p>В принципе, большинство программ которые я запускал, работали нормально с этим аллокатором. Из тех что я пробовал лишь две падали с <a href="http://en.wikipedia.org/wiki/SIGSEGV">SIGSEGV</a>.
+    Одна из-за того, что она обращалась к памяти после освобождения. И вторая из-за того, что она содержала <a href="http://en.wikipedia.org/wiki/Race_condition">race condition</a>, который на быстром
+    аллокаторе памяти никогда не проявлялся, а на медленном <span class="codein">malloc-intercept.so</span> проявлялся постоянно. Учитывайте это, когда будете запускать у себя.</p>
+    <p>
+      <a href="http://validator.w3.org/check?uri=referer">
+        <img src="http://www.w3.org/Icons/valid-xhtml10" alt="Valid XHTML 1.0 Strict" height="31" width="88" />
+      </a>
+    </p>
+  </body>
+</html>
