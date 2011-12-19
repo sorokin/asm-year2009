@@ -1,0 +1,167 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Hello world</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <style type="text/css">
+      .codeblock
+      {
+        background: #e0e0e0;
+        border: solid 1px black;
+        padding: 5px;
+        font-family: monospace;
+      }
+      .codein
+      {
+        font-family: monospace;
+      }
+      .imagediv
+      {
+        padding: 5px;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Hello world</h2>
+    <p>Ниже приводятся инструкции, как скомпилировать простое ядро, которое просто выводит «Hello, world!» и сделать из него
+    загрузочную дискету и загрузиться с нее из под эмулятора bochs.</p>
+    <p>Вначале создадим файл с образом дискеты:</p>
+    <div class="codeblock">
+    $ dd if=/dev/zero of=floppy.img bs=512 count=2880
+    </div>
+    <p>Дискета 1.44Мб состоит из 2880 секторов по 512 байт каждый. С помощью этой команды мы получили файл размером 1474560 байт заполненый нулями. Проверим это:</p>
+    <div class="codeblock">
+    $ okteta floppy.img
+    </div>
+    <div class="imagediv"><img src="okteta-zeros.png" alt="содержимое файла floppy.img после выполнения команды dd"/></div>
+    <p>Отформатируем эту дискету как FAT12 (стандартная файловая система для дискет):</p>
+    <div class="codeblock">
+    $ mkfs.msdos -F12 floppy.img<br/>
+    $ okteta floppy.img
+    </div>
+    <div class="imagediv"><img src="okteta-format.png" alt="содержимое файла floppy.img после форматирования как FAT12"/></div>
+    <p>Мы видим, что в загрузочный сектор, была записана программа выводящая строчку "This is not bootable disk...".
+    Обратите внимание на два байта <span class="codein">55 AA</span> по смещению <span class="codein">01FE</span>. Это сигнатура того,
+    что загрузочный диск содержит нормальную программу. BIOS при старте компьютера проверяет эту сигнатуру и если она равна
+    <span class="codein">55 AA</span> пытается загрузится с этого диска. Давайте попробуем загрузится с этого диска под эмулятором.</p>
+    <p>bochs это программа, которая эмулирует компьютер с x86-совместимым процессором. Информация о том какой именно компьютер
+    эмулируется хранится в конфигурационном файле. Поэтому для начала нам необходимо создать этот конфигурационный файл.</p>
+    <div class="codeblock">
+    $ bochs
+    </div>
+    <p>Далее выбираем:</p>
+    <div class="codeblock">
+    3. Edit options<br/>
+    11. Disk & Boot options<br/>
+    1. First Floppy Drive<br/>
+    What type of floppy drive? [none] 3.5" 1.44M<br/>
+    Enter new filename, or 'none' for no disk: [none] floppy.img<br/>
+    What type of floppy media? (auto=detect) [none] 1.44M<br/>
+    Is media write protected? [no] no<br/>
+    Is media inserted in drive? [no] yes<br/>
+    0. Return to previous menu<br/>
+    0. Return to previous menu<br/>
+    4. Save options to...<br/>
+    Save configuration to what file?  To cancel, type 'none'. [none] tutorial.bxrc<br/>
+    7. Quit now<br/>
+    </div>
+    <p>В любом вопросе вы можете ввести "?", чтобы узнать список возможных вариантов. После выхода в текущем каталоге
+    появится файл <span class="codein">tutorial.bxrc</span>. Запустим его используя команду:</p>
+    <div class="codeblock">
+    $ bochs -f tutorial.bxrc
+    </div>
+    <div class="imagediv"><img src="bochs-no-boot-disk.png" alt="окно bochs после исполнения boot-сектора записанного командой mkfs.msdos"/></div>
+    <p>Мы видим в точности то сообщение, которое записано в boot-секторе.</p>
+    <p>Чтобы упростить жизнь в этом примере, мы не будем писать свой собственный загрузочный сектор, а воспользуемся
+    уже готовым из KolibriOS. Для этого необходимо скачать с сайта <a href="http://kolibrios.org/">kolibrios.org</a> исходный код
+    KolibriOS. В каталоге <span class="codein">kernel/bootloader/</span> лежат исходники собственно загрузочного сектора.</p>
+    <div class="codeblock">
+    $ cd kernel/bootloader/<br/>
+    $ ls<br/>
+boot_fat12.asm  floppy1440.inc  floppy1680.inc  floppy1743.inc  floppy2880.inc  readme
+    </div>
+    <p>После чтения содержимого файла <span class="codein">boot_fat12.asm</span> мы понимаем, что этот загрузочный сектор загружает
+    ядро из файла под названием <span class="codein">kernel.mnt</span> по адресу <span class="codein">1000:0000</span> и передает
+    туда управление.</p>
+    <p>Давайте соберем загрузочный сектор:</p>
+    <div class="codeblock">
+    $ fasm boot_fat12.asm bootsec.bin<br/>
+flat assembler  version 1.69.35  (16384 kilobytes memory)<br/>
+2 passes, 512 bytes.
+    </div>
+    <p>В текущем каталоге создался файл <span class="codein">bootsec.bin</span> размером 512 байт:</p>
+    <div class="codeblock">
+    $ ls -l bootsec.bin<br/>
+    -rw-r--r-- 1 ivan ivan 512 2011-12-18 23:38 bootsec.bin
+    </div>
+    <p>Посмотрим на него в okteta:</p>
+    <div class="codeblock">
+    $ okteta bootsec.bin
+    </div>
+    <div class="imagediv"><img src="okteta-kolibri-bootsec.png" alt="загрузочный сектор KolibriOS"/></div>
+    <p>Скопируем содержимое этого файла в первый сектор образа дискеты:</p>
+    <div class="codeblock">
+    $ dd if=bootsec.bin of=floppy.img bs=512 count=1 conv=notrunc
+    </div>
+    <p>Опция <span class="codein">conv=notrunc</span> говорит <span class="codein">dd</span> не делать truncate после записи.</p>
+    <div class="codeblock">
+    $ okteta floppy.img
+    </div>
+    <div class="imagediv"><img src="okteta-kolibri-bootsec-on-floppy.png" alt="загрузочный сектор KolibriOS на дискете"/></div>
+    <p>Видно, что теперь первый сектор дискеты содержит содержимое загрузчика KolibriOS.</p>
+    <p>Напишем простой файл <span class="codein"><a href="kernel.asm">kernel.asm</a></span>, выводящий строчку «Hello, World!»</p>
+    <div class="codeblock">
+<pre>                mov     ax, cs
+                mov     ds, ax
+
+                mov     ax, 0b800h
+                mov     es, ax
+
+                mov     si, msg
+                xor     di,di
+
+                mov     ah, 7
+                mov     cx, msg_size
+
+@@:
+                lodsb
+                stosw
+                loop    @b
+
+                cli
+                hlt
+
+msg:
+                db      "Hello, world!"</pre>
+    </div>
+    <p>Скомпилируем его в <span class="codein">kernel.mnt</span></p>
+    <div class="codeblock">
+    $ fasm kernel.asm kernel.mnt<br/>
+    flat assembler  version 1.69.35  (16384 kilobytes memory)<br/>
+    2 passes, 38 bytes.
+    </div>
+    <p>Для того, чтобы залить этот файл на дискету необходимо примонтировать наш образ как диск.</p>
+    <div class="codeblock">
+    $ mkdir tmp<br/>
+    $ sudo mount floppy.img tmp<br/>
+    $ sudo cp kernel.mnt tmp/<br/>
+    $ sudo umount tmp
+    </div>
+    <p>Запустив <span class="codein">okteta</span> видим, что корневой каталог расположен на диске по адресу <span class="codein">2600</span>:</p>
+    <div class="imagediv"><img src="okteta-root-dir.png" alt="корневой каталог"/></div>
+    <p>А сам файл <span class="codein">kernel.mnt</span> попал на <span class="codein">4400</span>:</p>
+    <div class="imagediv"><img src="okteta-kernel-mnt.png" alt="kernel.mnt на образе дискеты"/></div>
+    <p>Запустим <span class="codein">bochs</span> с новым образом дискеты:</p>
+    <div class="codeblock">
+    $ bochs -f tutorial.bxrc
+    </div>
+    <div class="imagediv"><img src="bochs-hello-world.png" alt="работающий hello world под bochs"/></div>
+    <p>Видим, что первая строчка на экране содержит текст «Hello, World!».</p>
+    <p>
+      <a href="http://validator.w3.org/check?uri=referer">
+        <img src="http://www.w3.org/Icons/valid-xhtml10" alt="Valid XHTML 1.0 Strict" height="31" width="88" />
+      </a>
+    </p>
+  </body>
+</html>

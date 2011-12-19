@@ -1,0 +1,46 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Задание №2</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <style type="text/css">
+      .codeblock
+      {
+        background: #e0e0e0;
+        border: solid 1px black;
+        padding: 5px;
+        font-family: monospace;
+      }
+      .codein
+      {
+        font-family: monospace;
+      }
+      .imagediv
+      {
+        padding: 5px;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Задание №2</h2>
+    <p>В данном задании необходимо написать простенькое ядро, которое работает в защищенном режиме и обрабатывает прерывания
+    от таймера и клавиатуры. А также необходимо научится заливать его на загрузочный диск и запускаться с этого диска под
+    эмулятором.</p>
+    <p>В качестве загрузочного диска можно использовать как дискету (флешку), так и жесткий диск. Первичный загрузчик можно
+    написать самим, можно взять готовый. Главное, чтобы вы понимали как он работает.</p>
+    <p>Ядро должно переходить в защищенных режим. GDT можно настроить самым простым образом: сегмента кода, сегмент данных,
+    у обоих база 0, лимит 4Gb. <a href="http://en.wikipedia.org/wiki/A20_line#The_80286_and_the_high_memory_area">Линяя A20</a>
+    должна быть включена.</p>
+    <p>Ядро должно отображать количество обработанных прерываний от таймера и последние несколько скан-кодов клавиатуры.</p>
+    <ul>
+        <li><a href="task-2-booting-kolibri.html">Запуск KolibriOS под эмулятором bochs</a></li>
+        <li><a href="task-2-creating-image.html">Hello world</a></li>
+    </ul>
+    <p>
+      <a href="http://validator.w3.org/check?uri=referer">
+        <img src="http://www.w3.org/Icons/valid-xhtml10" alt="Valid XHTML 1.0 Strict" height="31" width="88" />
+      </a>
+    </p>
+  </body>
+</html>
