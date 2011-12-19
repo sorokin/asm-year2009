@@ -1,0 +1,147 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Сборка bochs со включенным отладчиком</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <style type="text/css">
+      .codeblock
+      {
+        background: #e0e0e0;
+        border: solid 1px black;
+        padding: 5px;
+        font-family: monospace;
+      }
+      .codein
+      {
+        font-family: monospace;
+      }
+      .imagediv
+      {
+        padding: 5px;
+        text-align: center;
+      }
+      .warningtab
+      {
+        background: #ffffe3;
+      }
+      .warningmsg
+      {
+        text-align: center;
+      }
+
+    </style>
+  </head>
+  <body>
+    <h2>Сборка bochs со включенным отладчиком</h2>
+    <p>Bochs содержит встроенный отладчик, позволяющий проходить программу по шагам. Для того, чтобы его использовать необходимо
+    скомпилировать bochs со специальными опциями. Bochs содержащийся в пакетах Ubuntu собран без этой опции.
+    Поэтому, чтобы пользоваться отладчиком нам придется пересобрать bochs.</p>
+    <p>Вначале необходимо скачать исходники bochs. Это можно сделать либо с их страницы на
+    SourceForge (<a href="http://sourceforge.net/projects/bochs/files/">страница bochs на sf.net</a>) либо взять исходники
+    напрямую из их svn.</p>
+    <p>После того, как исходники скачены необходимо перейти в каталог с исходниками и запустить команду</p>
+    <div class="codeblock">
+    $ CONFIGURE_ARGS=--enable-debugger\ --enable-disasm ./.conf.linux
+    </div>
+    <p><span class="codein">./.conf.linux</span> &mdash; это тонкий хелпер который вызывает <span class="codein">./configure</span> с нужными
+    аргументами. <span class="codein">CONFIGURE_ARGS</span> &mdash; это дополнительные параметры, которые мы хотим передать в
+    <span class="codein">./configure</span>.</p>
+    <p>Перед тем как запускать <span class="codein">./configure</span> желательно установить пакет
+    <span class="codein">libreadline-dev</span>. Этот пакет содержит хедера и либы для библиотеки
+    <a href="http://cnswww.cns.cwru.edu/php/chet/readline/rltop.html">GNU Readline</a>. Bochs можно собрать и без неё, но тогда
+    вы не сможете использовать стрелки влево/вправо, чтобы редактировать текущую команду, стрелку вверх, чтобы повторить предыдущую и т.п.</p>
+    <p>Затем необходимо запустить команду <span class="codein">make</span>:</p>
+    <div class="codeblock">
+    $ make
+    </div>
+    <p>Программа скомпилируется. Это займет некоторое время. После этого скомпилированные файлы можно скопировать в <span class="codein">/usr/local</span>:</p>
+    <div class="codeblock">
+    $ make install
+    </div>
+    <p>Не забудьте удалить старый пакет <span class="codein">bochs</span>, если он у вас был установлен. Для того, чтобы проверить откуда
+    будет запускаться команда <span class="codein">bochs</span>, можно воспользоваться командой <span class="codein">which</span>:</p>
+    <div class="codeblock">
+    $ which bochs<br/>
+    /usr/local/bin/bochs
+    </div>
+    <p>Обычно всё, что устанавливается из пакетов, устанавливается в <span class="codein">/usr</span>, а то, что собрано руками в <span class="codein">/usr/local</span>.</p>
+    <p>Теперь можно попробовать запустить новый bochs. Давайте попробуем запустить <span class="codein">tutorial.bxrc</span> из <a href="task-2-creating-image.html">примера Hello world</a></p>
+    <div class="codeblock">
+    $ bochs -f tutorial.bxrc
+    </div>
+    <div class="warningtab"><table width="100%"><tr>
+      <td><div class="warningmsg"><img src="exclamation-mark.png" alt="exclamation mark"/></div></td>
+      <td><div class="warningmsg">Bochs различных версий не отрывают конфиги друг друга. Конфиги возможно придется пересоздать.</div></td>
+    </tr></table></div>
+    <p>Bochs с отладчиком очень похож на обычный bochs. Единственная разница это то, что после старта он переходит в режим отладчика:</p>
+    <div class="codeblock">
+    Next at t=0<br/>
+    (0) [0x00000000fffffff0] f000:fff0 (unk. ctxt): jmp far f000:e05b         ; ea5be000f0<br/>
+    &lt;bochs:1&gt;
+    </div>
+    <p>Ознакомится с полным списком команд можно в документации
+    <a href="http://bochs.sourceforge.net/doc/docbook/user/internal-debugger.html">Using Bochs internal debugger</a>.</p>
+    <p>Давайте поставим точку останова туда где у нас загружается ядро (<span class="codein">1000:0000</span>):</p>
+    <div class="codeblock">
+    &lt;bochs:1&gt; b 0x10000
+    </div>
+    <p><span class="codein">0x10000</span> &mdash; это физический адрес, куда у нас загружено ядро (сегмент * 16 + смещение). Запустим исполнение:</p>
+    <div class="codeblock">
+    &lt;bochs:1&gt; c<br/>
+    ...skipped...<br/>
+    Next at t=15139139<br/>
+    (0) [0x0000000000010000] 1000:0000 (unk. ctxt): mov ax, cs                ; 8cc8<br/>
+    &lt;bochs:3&gt;
+    </div>
+    <p>Видим, что мы можем ходить по шагам наш код:</p>
+    <div class="codeblock">
+    &lt;bochs:3&gt; s<br/>
+    Next at t=15139140<br/>
+    (0) [0x0000000000010002] 1000:0002 (unk. ctxt): mov ds, ax                ; 8ed8<br/>
+    &lt;bochs:4&gt;<br/>
+    Next at t=15139141<br/>
+    (0) [0x0000000000010004] 1000:0004 (unk. ctxt): mov ax, 0xb800            ; b800b8<br/>
+    &lt;bochs:5&gt;<br/>
+    Next at t=15139142<br/>
+    (0) [0x0000000000010007] 1000:0007 (unk. ctxt): mov es, ax                ; 8ec0<br/>
+    &lt;bochs:6&gt;<br/>
+    Next at t=15139143<br/>
+    (0) [0x0000000000010009] 1000:0009 (unk. ctxt): mov si, 0x0019            ; be1900<br/>
+    &lt;bochs:7&gt;<br/>
+    Next at t=15139144<br/>
+    (0) [0x000000000001000c] 1000:000c (unk. ctxt): xor di, di                ; 31ff<br/>
+    &lt;bochs:8&gt;<br/>
+    Next at t=15139145<br/>
+    (0) [0x000000000001000e] 1000:000e (unk. ctxt): mov ah, 0x07              ; b407<br/>
+    &lt;bochs:9&gt;<br/>
+    Next at t=15139146<br/>
+    (0) [0x0000000000010010] 1000:0010 (unk. ctxt): mov cx, 0x000d            ; b90d00<br/>
+    &lt;bochs:10&gt;<br/>
+    Next at t=15139147<br/>
+    (0) [0x0000000000010013] 1000:0013 (unk. ctxt): lodsb al, byte ptr ds:[si] ; ac<br/>
+    &lt;bochs:11&gt;<br/>
+    Next at t=15139148<br/>
+    (0) [0x0000000000010014] 1000:0014 (unk. ctxt): stosw word ptr es:[di], ax ; ab<br/>
+    &lt;bochs:12&gt;<br/>
+    Next at t=15139149<br/>
+    (0) [0x0000000000010015] 1000:0015 (unk. ctxt): loop .-4 (0x00010013)     ; e2fc<br/>
+    &lt;bochs:13&gt;<br/>
+    Next at t=15139150<br/>
+    (0) [0x0000000000010013] 1000:0013 (unk. ctxt): lodsb al, byte ptr ds:[si] ; ac<br/>
+    &lt;bochs:14&gt;<br/>
+    Next at t=15139151<br/>
+    (0) [0x0000000000010014] 1000:0014 (unk. ctxt): stosw word ptr es:[di], ax ; ab<br/>
+    &lt;bochs:15&gt;<br/>
+    Next at t=15139152<br/>
+    (0) [0x0000000000010015] 1000:0015 (unk. ctxt): loop .-4 (0x00010013)     ; e2fc<br/>
+    &lt;bochs:16&gt;
+    </div>
+    <p>У bochs теоретически есть <a href="http://bfe.sourceforge.net/">графический отладчик</a>, но я им никогда не пользовался. Можете его
+    тоже попробовать.</p>
+    <p>
+      <a href="http://validator.w3.org/check?uri=referer">
+        <img src="http://www.w3.org/Icons/valid-xhtml10" alt="Valid XHTML 1.0 Strict" height="31" width="88" />
+      </a>
+    </p>
+  </body>
+</html>
